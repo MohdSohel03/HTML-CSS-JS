@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>To-Do List</title>
-    <style>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>To-Do List</title>
+        <style>
         * {
             margin: 0;
             padding: 0;
@@ -95,18 +95,25 @@
             background: #e60000;
         }
     </style>
-</head>
-<body>
-    <div class="container">
-        <h2>To-Do List</h2>
-        <div class="input-container">
-            <input type="text" id="taskInput" placeholder="Add a new task...">
-            <button onclick="addTask()">Add</button>
+    </head>
+    <body>
+        <div class="container">
+            <h2>To-Do List</h2>
+            <div class="input-container">
+                <input type="text" id="taskInput"
+                    placeholder="Add a new task...">
+                <button onclick="addTask()">Add</button>
+            </div>
+            <ul id="taskList"></ul>
         </div>
-        <ul id="taskList"></ul>
-    </div>
-    <script>
+        <script>
         document.addEventListener("DOMContentLoaded", loadTasks);
+
+        document.addEventListener("keydown", function (event) {
+        if (event.key === "Enter") {
+            addTask();
+            }
+        });
 
         function addTask() {
             let taskInput = document.getElementById("taskInput");
@@ -145,5 +152,5 @@
             });
         }
     </script>
-</body>
+    </body>
 </html>
