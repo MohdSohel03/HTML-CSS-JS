@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>3D Image Slider</title>
+        <link rel="stylesheet" href="style.css">
+    </head>
+    <body>
+
+        <div class="slider-container">
+            <div class="carousel">
+                <img src="City.jpg" alt="1">
+                <img src="Animal.webp" alt="2">
+                <img src="Nature.jpg" alt="3">
+                <img src="Robotic.webp" alt="4">
+                <img src="Technology.jpg" alt="5">
+                <img src="Nature1.jpg" alt="6">
+            </div>
+
+            <!-- Buttons Below -->
+            <div class="button-container">
+                <button class="prev" onclick="rotateCarousel(-1)">&#10094;
+                    Prev</button>
+                <button class="next" onclick="rotateCarousel(1)">Next
+                    &#10095;</button>
+            </div>
+        </div>
+
+        <script src="script.js"></script>
+
+    </body>
+</html>

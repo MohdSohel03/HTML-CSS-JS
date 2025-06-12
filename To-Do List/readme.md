@@ -1,25 +1,47 @@
-# 📝 Elegant To-Do List Web App
+# 🎮 Tic-Tac-Toe Game
 
-A clean, responsive, and modern to-do list app built using **HTML**, **CSS**, and **JavaScript**. This project emphasizes simplicity, local storage persistence, and stylish UI interactions.
+A stylish, animated, and interactive **Tic-Tac-Toe** game built using **HTML**, **CSS**, and **JavaScript**. This version features a **live scoreboard**, **winner highlight animation**, and a modern dark-themed design.
 
-## 🚀 Features
+---
 
-- 🔹 Add, view, and delete tasks
-- 🔹 Press **Enter** to quickly add tasks
-- 🔹 Persist tasks using **localStorage**
-- 🔹 Sleek UI with **glassmorphism** and gradients
-- 🔹 Responsive design and smooth animations
+## ✨ Features
 
-## 📸 Demo
+- 🔁 Two-player mode (X vs O)
+- 🧠 Winner detection with highlight animation
+- 🎯 Score tracking for both players
+- 🔄 Restart game without resetting scores
+- ♻️ Reset scores and game
+- 🎨 Responsive layout with sleek modern UI
 
-![To-Do App Screenshot](UI.png) <!-- Replace with actual screenshot if available -->
+---
 
-## 🛠️ Tech Stack
+## 📁 Project Structure
 
-- HTML5
-- CSS3 (with modern UI enhancements)
-- JavaScript (vanilla)
-- LocalStorage for persistence
+📁 tic-tac-toe/
+├── index.html # Main HTML structure
+├── style.css # Custom CSS styling
+├── script.js # JavaScript game logic
+└── README.md # Project documentation
+---
 
-## 📂 Project Structure
+## 🚀 Getting Started
 
+1. **Clone or Download** the project:
+```bash
+git clone https://github.com/MohdSohel03/HTML-CSS-JS/tree/4839c13fc8e14826a10fbd26e5bf5718cd65cff1/Tic-Tac-Toe
+2. Open index.html in your browser.
+
+That’s it! No installations or setup needed.
+
+## 🕹️ How to Use
+
+1. Type a task in the input field.
+2. Click Add or press Enter to add it.
+3. Click the ❌ X button to delete a task.
+4. Tasks persist even if you refresh or close the tab.
+
+## 🛠 Tech Stack
+
+1. HTML5 – Markup
+2. CSS3 – Styling and layout (Glassmorphism)
+3. JavaScript (Vanilla) – Functionality and localStorage

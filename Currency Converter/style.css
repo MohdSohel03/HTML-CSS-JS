@@ -1,0 +1,98 @@
+ body {
+     font-family: 'Poppins', sans-serif;
+     display: flex;
+     justify-content: center;
+     align-items: center;
+     height: 100vh;
+     margin: 0;
+     background: linear-gradient(135deg, #343443, #1c88be);
+ }
+
+ .converter-container {
+     background: white;
+     padding: 2rem;
+     border-radius: 12px;
+     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+     width: 350px;
+     text-align: center;
+     animation: fadeIn 0.5s ease-in-out;
+ }
+
+ @keyframes fadeIn {
+     from {
+         opacity: 0;
+         transform: translateY(-20px);
+     }
+
+     to {
+         opacity: 1;
+         transform: translateY(0);
+     }
+ }
+
+ h1 {
+     font-size: 1.5rem;
+     margin-bottom: 1.5rem;
+     color: #333;
+ }
+
+ .input-group {
+     margin-bottom: 1rem;
+     text-align: left;
+ }
+
+ input,
+ select {
+     width: 100%;
+     padding: 10px;
+     border: 1px solid #ccc;
+     border-radius: 6px;
+     font-size: 1rem;
+     margin-top: 5px;
+ }
+
+ .currency-select {
+     display: flex;
+     align-items: center;
+     justify-content: space-between;
+ }
+
+ .currency-select img {
+     width: 20px;
+     margin-right: 8px;
+ }
+
+ .swap-icon {
+     font-size: 1.5rem;
+     cursor: pointer;
+     transition: transform 0.3s;
+ }
+
+ .swap-icon:hover {
+     transform: rotate(180deg);
+ }
+
+ button {
+     width: 100%;
+     padding: 10px;
+     background: #b90f80;
+     border: none;
+     border-radius: 6px;
+     cursor: pointer;
+     font-size: 1rem;
+     font-weight: bold;
+     color: #fff;
+     margin-top: 1rem;
+     transition: background 0.3s;
+ }
+
+ button:hover {
+     background: #5e005e;
+ }
+
+ .result {
+     margin-top: 1.5rem;
+     font-size: 1.2rem;
+     font-weight: bold;
+     color: #333;
+ }

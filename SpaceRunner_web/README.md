@@ -1,8 +1,9 @@
-# 🚀 Space Runner - Pygame
+# 🚀 Space Runner 
 
 An animated, music-backed space runner game with shields, power-ups, parallax backgrounds, and saved high scores.
 
 ## 🎮 Features
+
 - Player sprite with shield power-ups
 - Collectibles and asteroids
 - Parallax background animation
@@ -19,7 +20,7 @@ An animated, music-backed space runner game with shields, power-ups, parallax ba
 - `main.py`: Game code
 - `README.md`: Info & instructions
 
-📁 assets/ Folder
+## 📁 assets/ Folder
 Contains all game visuals and sounds.
 
 player.png → Your player character sprite
@@ -35,7 +36,9 @@ powerup.wav → Played on power-up collection
 ## ▶️ Running the Game
 
 Make sure Python and Pygame are installed:
+
 ```bash
 pip install pygame
 python main.py
 
+```

@@ -1,150 +1,25 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>OpenAI API Test</title>
-  <style>
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      margin: 0;
-      padding: 40px;
-      background: linear-gradient(to right, #e0eafc, #cfdef3);
-      display: flex;
-      justify-content: center;
-      align-items: flex-start;
-      min-height: 100vh;
-    }
+  <head>
+    <meta charset="UTF-8">
+    <title>OpenAI API Test</title>
+    <link rel="stylesheet" href="style.css">
+  </head>
+  <body>
 
-    .container {
-      background: white;
-      border-radius: 16px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-      padding: 30px;
-      width: 100%;
-      max-width: 600px;
-      animation: fadeIn 1s ease;
-    }
+    <div class="container">
+      <h2>🔍 Test OpenAI API Key</h2>
 
-    h2 {
-      margin-top: 0;
-      color: #333;
-    }
+      <input type="text" id="apiKey" placeholder="Enter your OpenAI API key" />
+      <textarea id="userInput" rows="3"
+        placeholder="Ask something..."></textarea>
+      <button onclick="testOpenAI()">Send</button>
 
-    input, textarea {
-      padding: 12px;
-      margin: 10px 0;
-      width: 100%;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      transition: border 0.3s;
-    }
+      <h3>💬 Response</h3>
+      <div id="response">Waiting for input...</div>
+    </div>
 
-    input:focus, textarea:focus {
-      border-color: #4f46e5;
-      outline: none;
-    }
+    <script src="script.js"></script>
 
-    button {
-      background-color: #4f46e5;
-      color: white;
-      padding: 12px;
-      border: none;
-      border-radius: 8px;
-      width: 100%;
-      font-size: 16px;
-      cursor: pointer;
-      transition: background-color 0.3s;
-    }
-
-    button:hover {
-      background-color: #4338ca;
-    }
-
-    #response {
-      white-space: pre-wrap;
-      background: #f3f4f6;
-      padding: 15px;
-      border-radius: 8px;
-      margin-top: 20px;
-      min-height: 60px;
-      transition: all 0.3s ease;
-      animation: fadeIn 0.8s ease;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .loading::after {
-      content: ' .';
-      animation: dots 1s steps(3, end) infinite;
-    }
-
-    @keyframes dots {
-      0% { content: ' .'; }
-      33% { content: ' ..'; }
-      66% { content: ' ...'; }
-      100% { content: ' .'; }
-    }
-  </style>
-</head>
-<body>
-
-  <div class="container">
-    <h2>🔍 Test OpenAI API Key</h2>
-
-    <input type="text" id="apiKey" placeholder="Enter your OpenAI API key" />
-    <textarea id="userInput" rows="3" placeholder="Ask something..."></textarea>
-    <button onclick="testOpenAI()">Send</button>
-
-    <h3>💬 Response</h3>
-    <div id="response">Waiting for input...</div>
-  </div>
-
-  <script>
-    async function testOpenAI() {
-      const key = document.getElementById('apiKey').value.trim();
-      const userMessage = document.getElementById('userInput').value.trim();
-      const responseBox = document.getElementById('response');
-
-      if (!key || !userMessage) {
-        alert("Please enter both your API key and a message.");
-        return;
-      }
-
-      responseBox.textContent = "Loading";
-      responseBox.classList.add("loading");
-
-      try {
-        const res = await fetch("https://api.openai.com/v1/chat/completions", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${key}`
-          },
-          body: JSON.stringify({
-            model: "gpt-3.5-turbo",
-            messages: [{ role: "user", content: userMessage }]
-          })
-        });
-
-        const data = await res.json();
-        responseBox.classList.remove("loading");
-
-        if (res.ok) {
-          const reply = data.choices[0].message.content;
-          responseBox.textContent = reply;
-        } else {
-          responseBox.textContent = `❌ Error: ${data.error?.message || res.status}`;
-        }
-
-      } catch (err) {
-        responseBox.classList.remove("loading");
-        responseBox.textContent = `❌ Failed to fetch: ${err.message}`;
-      }
-    }
-  </script>
-
-</body>
+  </body>
 </html>

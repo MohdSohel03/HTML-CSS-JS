@@ -1,0 +1,124 @@
+body {
+    font-family: sans-serif;
+    background: #121212;
+    color: #fff;
+    text-align: center;
+    padding: 20px;
+}
+
+h1 {
+    font-size: 2rem;
+}
+
+.stats {
+    margin: 15px;
+    font-size: 18px;
+}
+
+.game-board {
+    display: grid;
+    grid-template-columns: repeat(4, 100px);
+    grid-gap: 15px;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.card {
+    width: 100px;
+    height: 100px;
+    perspective: 600px;
+    cursor: pointer;
+}
+
+.card-inner {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    transform-style: preserve-3d;
+    transition: transform 0.6s;
+}
+
+.card.flipped .card-inner {
+    transform: rotateY(180deg);
+}
+
+.card-front,
+.card-back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 32px;
+    user-select: none;
+}
+
+.card-front {
+    background: #1e1e1e;
+    color: #fff;
+}
+
+.card-back {
+    background: #00bcd4;
+    transform: rotateY(180deg);
+    color: #000;
+}
+
+button#restart {
+    margin-top: 20px;
+    padding: 10px 20px;
+    font-size: 16px;
+    background: #00bcd4;
+    border: none;
+    border-radius: 6px;
+    color: #000;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+button#restart:hover {
+    background: #0199b6;
+}
+
+#best-scores {
+    margin-top: 10px;
+    font-size: 16px;
+    color: #bbb;
+}
+
+/* Simple confetti animation */
+#confetti {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none;
+    overflow: visible;
+    z-index: 1000;
+}
+
+.confetti-piece {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background-color: #00bcd4;
+    opacity: 0.8;
+    animation: confetti-fall 3s ease-out forwards;
+    border-radius: 2px;
+}
+
+@keyframes confetti-fall {
+    0% {
+        transform: translateY(0) rotate(0deg);
+        opacity: 1;
+    }
+
+    100% {
+        transform: translateY(600px) rotate(360deg);
+        opacity: 0;
+    }
+}

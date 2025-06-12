@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Modern Currency Converter</title>
+        <link rel="stylesheet" href="style.css">
+    </head>
+    <body>
+        <div class="converter-container">
+            <h1>Currency Converter</h1>
+
+            <div class="input-group">
+                <label>Enter Amount</label>
+                <input type="number" id="amount" placeholder="Enter amount">
+            </div>
+
+            <div class="input-group currency-select">
+                <label>From</label>
+                <select id="from-currency">
+                    <option value="USD">🇺🇸 USD</option>
+                    <option value="EUR">🇪🇺 EUR</option>
+                    <option value="GBP">🇬🇧 GBP</option>
+                </select>
+            </div>
+
+            <div class="swap-icon" onclick="swapCurrencies()">↔️</div>
+
+            <div class="input-group currency-select">
+                <label>To</label>
+                <select id="to-currency">
+                    <option value="NPR">🇳🇵 NPR</option>
+                    <option value="INR">🇮🇳 INR</option>
+                    <option value="PKR">🇵🇰 PKR</option>
+                </select>
+            </div>
+
+            <button onclick="convertCurrency()">Get Exchange Rate</button>
+            <div class="result" id="result">100 USD = 7932.57 NPR</div>
+        </div>
+
+        <script src="script.js"></script>
+    </body>
+</html>

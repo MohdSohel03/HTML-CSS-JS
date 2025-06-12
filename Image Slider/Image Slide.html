@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3D Image Slider</title>
-    <style>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>3D Image Slider</title>
+        <style>
         * {
             margin: 0;
             padding: 0;
@@ -80,26 +80,28 @@
             color: black;
 
     </style>
-</head>
-<body>
+    </head>
+    <body>
 
-    <div class="slider-container">
-        <button class="prev" onclick="rotateCarousel(-1)">&#10094;</button>
-        <div class="carousel">
-            <img src="City.jpg" alt="1">
-            <img src="Animal.webp" alt="2">
-            <img src="Nature.jpg" alt="3">
-            <img src="Robotic.webp" alt="4">
-            <img src="Technology.jpg" alt="5">
-            <img src="Nature.jpg" alt="6">
+        <div class="slider-container">
+            <button class="prev" onclick="rotateCarousel(-1)">&#10094;</button>
+            <div class="carousel">
+                <img src="City.jpg" alt="1">
+                <img src="Animal.webp" alt="2">
+                <img src="Nature.jpg" alt="3">
+                <img src="Robotic.webp" alt="4">
+                <img src="Technology.jpg" alt="5">
+                <img src="Nature.jpg" alt="6">
+            </div>
+            <div class="button-container">
+                <button class="prev" onclick="rotateCarousel(-1)">&#10094;
+                    Prev</button>
+                <button class="next" onclick="rotateCarousel(1)">Next
+                    &#10095;</button>
+            </div>
         </div>
-        <div class="button-container">
-            <button class="prev" onclick="rotateCarousel(-1)">&#10094; Prev</button>
-            <button class="next" onclick="rotateCarousel(1)">Next &#10095;</button>
-        </div>
-    </div>
 
-    <script>
+        <script>
         let angle = 0;
 
         function rotateCarousel(direction) {
@@ -108,5 +110,5 @@
         }
     </script>
 
-</body>
+    </body>
 </html>
