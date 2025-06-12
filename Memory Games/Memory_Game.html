@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Memory Game</title>
+<style>
+  :root {
+    --card-size: 80px;
+    --primary-color: #4caf50;
+    --background-light: #f0f0f0;
+    --background-dark: #121212;
+    --text-light: #222;
+    --text-dark: #eee;
+  }
+
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    background: var(--background-dark);
+    color: var(--text-dark);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+    transition: background 0.3s, color 0.3s;
+  }
+
+  body.light {
+    background: var(--background-light);
+    color: var(--text-light);
+  }
+
+  h1 {
+    margin-bottom: 10px;
+  }
+
+  #controls {
+    margin-bottom: 15px;
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  button, select {
+    font-size: 16px;
+    padding: 6px 12px;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+    background-color: var(--primary-color);
+    color: white;
+    transition: background-color 0.3s;
+  }
+
+  button:hover, select:hover {
+    background-color: #388e3c;
+  }
+
+  #moves, #timer, #matched {
+    font-weight: bold;
+    font-size: 18px;
+  }
+
+  #board {
+    display: grid;
+    grid-gap: 10px;
+    justify-content: center;
+    margin-top: 15px;
+    user-select: none;
+  }
+
+  .card {
+    width: var(--card-size);
+    height: var(--card-size);
+    perspective: 600px;
+    cursor: pointer;
+    outline: none;
+  }
+
+  .card.paused {
+    cursor: default;
+  }
+
+  .card-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transition: transform 0.5s;
+    transform-style: preserve-3d;
+    transform: rotateY(180deg);
+  }
+
+  .card.flipped .card-inner {
+    transform: rotateY(0deg);
+    box-shadow: 0 5px 15px var(--primary-color);
+  }
+
+  .card-front, .card-back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 8px;
+    backface-visibility: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 38px;
+    user-select: none;
+  }
+
+  .card-front {
+    background: var(--primary-color);
+    color: white;
+  }
+
+  body.light .card-front {
+    background: #388e3c;
+  }
+
+  .card-back {
+    background: #222;
+    color: #eee;
+    transform: rotateY(180deg);
+  }
+
+  body.light .card-back {
+    background: #ddd;
+    color: #444;
+  }
+
+  #leaderboard {
+    margin-top: 25px;
+    width: 250px;
+    text-align: center;
+  }
+
+  #leaderboard h2 {
+    margin-bottom: 10px;
+  }
+
+  #leaderboard ul {
+    list-style: none;
+    padding-left: 0;
+    margin: 0;
+    font-size: 16px;
+  }
+
+  #leaderboard li {
+    padding: 4px 0;
+    border-bottom: 1px solid #ccc;
+  }
+
+  body.light #leaderboard li {
+    border-color: #aaa;
+  }
+
+  /* Pause overlay */
+  #board.paused {
+    pointer-events: none;
+    opacity: 0.6;
+  }
+</style>
+</head>
+<body>
+
+<h1>Memory Game</h1>
+
+<div id="controls" role="region" aria-label="Game controls">
+  <label for="difficulty">Pairs:</label>
+  <select id="difficulty" aria-describedby="difficultyDesc">
+    <option value="4">4 Pairs (8 cards)</option>
+    <option value="6" selected>6 Pairs (12 cards)</option>
+    <option value="8">8 Pairs (16 cards)</option>
+    <option value="10">10 Pairs (20 cards)</option>
+  </select>
+  <span id="difficultyDesc" class="sr-only">Select difficulty by number of pairs.</span>
+
+  <button id="restartBtn" aria-label="Restart Game">Restart</button>
+  <button id="pauseBtn" aria-pressed="false" aria-label="Pause Game">Pause</button>
+  <button id="modeToggle" aria-pressed="false" aria-label="Toggle Dark/Light Mode">Light Mode</button>
+</div>
+
+<div>
+  <span id="moves">Moves: 0</span> |
+  <span id="matched">Matches: 0</span> |
+  <span id="timer">Time: 0s</span>
+</div>
+
+<div id="board" tabindex="0" aria-label="Memory card game board"></div>
+
+<div id="leaderboard" aria-live="polite" aria-atomic="true">
+  <h2>Leaderboard (Best 5 Scores)</h2>
+  <ul id="leaderboardList"><li>No scores yet.</li></ul>
+</div>
+
+<script>
+(() => {
+  const allSymbols = ['🍎','🍌','🍇','🍉','🍒','🥝','🍍','🥥','🍓','🍑','🍋','🥭','🍐','🥑','🍊','🍈','🍏','🍅','🥕','🌽'];
+  const LS_BEST_SCORE = 'memory-game-best-scores';
+
+  const board = document.getElementById('board');
+  const movesDisplay = document.getElementById('moves');
+  const matchedDisplay = document.getElementById('matched');
+  const timerDisplay = document.getElementById('timer');
+  const restartBtn = document.getElementById('restartBtn');
+  const pauseBtn = document.getElementById('pauseBtn');
+  const modeToggle = document.getElementById('modeToggle');
+  const difficultySelect = document.getElementById('difficulty');
+  const leaderboardList = document.getElementById('leaderboardList');
+
+  let cards = [];
+  let flippedCards = [];
+  let matchedPairs = 0;
+  let moves = 0;
+  let seconds = 0;
+  let timer = null;
+  let paused = false;
+  let gameStarted = false;
+  let currentPairs = parseInt(difficultySelect.value);
+
+  // Accessibility helper: screen reader only text
+  const srOnlyCss = `
+    .sr-only { 
+      position: absolute; 
+      width: 1px; 
+      height: 1px; 
+      padding: 0; 
+      margin: -1px; 
+      overflow: hidden; 
+      clip: rect(0,0,0,0); 
+      border: 0; 
+    }
+  `;
+  const style = document.createElement('style');
+  style.appendChild(document.createTextNode(srOnlyCss));
+  document.head.appendChild(style);
+
+  // Sound effects with Web Audio API
+  const AudioContext = window.AudioContext || window.webkitAudioContext;
+  const audioCtx = new AudioContext();
+
+  function playSound(type) {
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+
+    switch(type) {
+      case 'flip':
+        osc.frequency.value = 400;
+        break;
+      case 'match':
+        osc.frequency.value = 600;
+        break;
+      case 'win':
+        osc.frequency.value = 800;
+        break;
+      default:
+        osc.frequency.value = 300;
+    }
+
+    osc.type = 'square';
+    osc.start();
+    osc.stop(audioCtx.currentTime + 0.1);
+  }
+
+  function createCard(symbol) {
+    const card = document.createElement('button');
+    card.classList.add('card');
+    card.setAttribute('type', 'button');
+    card.setAttribute('aria-label', 'Memory card');
+    card.setAttribute('aria-pressed', 'false');
+    card.dataset.symbol = symbol;
+    card.tabIndex = 0;
+
+    const inner = document.createElement('div');
+    inner.classList.add('card-inner');
+
+    const front = document.createElement('div');
+    front.classList.add('card-front');
+    front.textContent = symbol;
+
+    const back = document.createElement('div');
+    back.classList.add('card-back');
+    back.textContent = '❓';
+
+    inner.appendChild(front);
+    inner.appendChild(back);
+    card.appendChild(inner);
+
+    card.addEventListener('click', () => {
+      if (paused || !gameStarted && flippedCards.length === 2) return;
+      if (flippedCards.length === 2 || flippedCards.includes(card) || card.classList.contains('matched')) return;
+      flipCard(card);
+    });
+
+    card.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        card.click();
+      }
+    });
+
+    return card;
+  }
+
+  function flipCard(card) {
+    if (paused) return;
+    playSound('flip');
+    card.classList.add('flipped');
+    card.setAttribute('aria-pressed', 'true');
+    flippedCards.push(card);
+
+    if (!gameStarted) {
+      startTimer();
+      gameStarted = true;
+    }
+
+    if (flippedCards.length === 2) {
+      moves++;
+      updateStats();
+      checkMatch();
+    }
+  }
+
+  function checkMatch() {
+    const [card1, card2] = flippedCards;
+    if (card1.dataset.symbol === card2.dataset.symbol) {
+      // Match!
+      playSound('match');
+      card1.classList.add('matched');
+      card2.classList.add('matched');
+      matchedPairs++;
+      flippedCards = [];
+      updateStats();
+
+      if (matchedPairs === currentPairs) {
+        endGame();
+      }
+    } else {
+      // No match - flip back after delay
+      paused = true;
+      board.classList.add('paused');
+      setTimeout(() => {
+        card1.classList.remove('flipped');
+        card2.classList.remove('flipped');
+        card1.setAttribute('aria-pressed', 'false');
+        card2.setAttribute('aria-pressed', 'false');
+        flippedCards = [];
+        paused = false;
+        board.classList.remove('paused');
+      }, 1000);
+    }
+  }
+
+  function updateStats() {
+    movesDisplay.textContent = `Moves: ${moves}`;
+    matchedDisplay.textContent = `Matches: ${matchedPairs}`;
+  }
+
+  function startTimer() {
+    timer = setInterval(() => {
+      if (!paused) {
+        seconds++;
+        timerDisplay.textContent = `Time: ${seconds}s`;
+      }
+    }, 1000);
+  }
+
+  function stopTimer() {
+    clearInterval(timer);
+    timer = null;
+  }
+
+  function resetGame() {
+    stopTimer();
+    gameStarted = false;
+    paused = false;
+    seconds = 0;
+    moves = 0;
+    matchedPairs = 0;
+    flippedCards = [];
+    updateStats();
+    timerDisplay.textContent = 'Time: 0s';
+    board.classList.remove('paused');
+  }
+
+  function shuffleArray(arr) {
+    for(let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+  }
+
+  function generateCards(pairs) {
+    const symbols = allSymbols.slice(0);
+    shuffleArray(symbols);
+    const selected = symbols.slice(0, pairs);
+    const cardSymbols = selected.concat(selected);
+    shuffleArray(cardSymbols);
+    return cardSymbols;
+  }
+
+  function createBoard(pairs) {
+    board.innerHTML = '';
+    cards = [];
+    currentPairs = pairs;
+
+    const totalCards = pairs * 2;
+    let cols = Math.ceil(Math.sqrt(totalCards));
+    let rows = Math.ceil(totalCards / cols);
+    board.style.gridTemplateColumns = `repeat(${cols}, var(--card-size))`;
+    board.style.gridTemplateRows = `repeat(${rows}, var(--card-size))`;
+
+    const cardSymbols = generateCards(pairs);
+
+    cardSymbols.forEach(symbol => {
+      const card = createCard(symbol);
+      cards.push(card);
+      board.appendChild(card);
+    });
+  }
+
+  function endGame() {
+    stopTimer();
+    playSound('win');
+    saveScore(moves, seconds);
+    setTimeout(() => {
+      alert(`🎉 You won in ${moves} moves and ${seconds} seconds!`);
+    }, 300);
+  }
+
+  function saveScore(moves, time) {
+    const scores = JSON.parse(localStorage.getItem(LS_BEST_SCORE)) || [];
+    scores.push({moves, time});
+    scores.sort((a,b) => a.moves - b.moves || a.time - b.time);
+    if (scores.length > 5) scores.splice(5);
+    localStorage.setItem(LS_BEST_SCORE, JSON.stringify(scores));
+    updateLeaderboard();
+  }
+
+  function updateLeaderboard() {
+    const scores = JSON.parse(localStorage.getItem(LS_BEST_SCORE)) || [];
+    leaderboardList.innerHTML = '';
+    if (scores.length === 0) {
+      const li = document.createElement('li');
+      li.textContent = 'No scores yet.';
+      leaderboardList.appendChild(li);
+      return;
+    }
+    scores.forEach(({moves, time}, i) => {
+      const li = document.createElement('li');
+      li.textContent = `#${i+1}: ${moves} moves, ${time}s`;
+      leaderboardList.appendChild(li);
+    });
+  }
+
+  function togglePause() {
+    if (!gameStarted) return;
+    paused = !paused;
+    pauseBtn.textContent = paused ? 'Resume' : 'Pause';
+    pauseBtn.setAttribute('aria-pressed', paused.toString());
+    board.classList.toggle('paused', paused);
+  }
+
+  function toggleMode() {
+    document.body.classList.toggle('light');
+    const isLight = document.body.classList.contains('light');
+    modeToggle.textContent = isLight ? 'Dark Mode' : 'Light Mode';
+    modeToggle.setAttribute('aria-pressed', isLight.toString());
+  }
+
+  restartBtn.addEventListener('click', () => {
+    resetGame();
+    createBoard(parseInt(difficultySelect.value));
+  });
+
+  pauseBtn.addEventListener('click', () => {
+    togglePause();
+  });
+
+  modeToggle.addEventListener('click', () => {
+    toggleMode();
+  });
+
+  difficultySelect.addEventListener('change', () => {
+    resetGame();
+    createBoard(parseInt(difficultySelect.value));
+  });
+
+  // Initial setup
+  updateLeaderboard();
+  createBoard(currentPairs);
+})();
+</script>
+</body>
+</html>

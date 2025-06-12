@@ -1,0 +1,296 @@
+<!-- Start of HTML Document -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mohd Sohel Ansari | Portfolio</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
+    :root {
+      --bg: #0f0f11;
+      --card: #1a1a1f;
+      --text: #f1f1f1;
+      --accent: #4e54c8;
+    }
+    body.light {
+      --bg: #f5f5f5;
+      --card: #ffffff;
+      --text: #111;
+    }
+    * {
+      margin: 0; padding: 0; box-sizing: border-box;
+      font-family: 'Inter', sans-serif;
+      scroll-behavior: smooth;
+    }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      transition: background 0.5s, color 0.5s;
+    }
+    nav {
+      background: var(--card);
+      padding: 1rem 2rem;
+      display: flex; justify-content: space-between; align-items: center;
+      position: sticky; top: 0; z-index: 1000;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    }
+    nav h1 { color: var(--accent); font-size: 1.5rem; }
+    .nav-toggle {
+      display: none; font-size: 1.5rem; color: var(--text); cursor: pointer;
+    }
+    nav ul {
+      list-style: none; display: flex; gap: 1.5rem;
+    }
+    nav ul li a {
+      text-decoration: none; color: var(--text); font-weight: 500;
+      transition: color 0.3s;
+    }
+    nav ul li a:hover { color: var(--accent); }
+
+    .toggle-mode {
+      position: fixed; top: 1rem; right: 1rem;
+      background: var(--accent); color: #fff;
+      border: none; padding: 8px 14px; border-radius: 20px;
+      cursor: pointer; font-weight: bold;
+    }
+
+    .hero {
+      text-align: center; padding: 100px 20px 60px;
+      display: flex; flex-direction: column; align-items: center;
+    }
+    .hero img {
+      width: 150px; height: 150px;
+      border-radius: 50%; margin-bottom: 20px;
+      border: 3px solid var(--accent);
+    }
+    .hero h2 {
+      font-size: 2.8rem; font-weight: 800; color: var(--accent); margin-bottom: 10px;
+    }
+    .hero p {
+      font-size: 1.2rem; margin-bottom: 15px;
+    }
+    .typewriter {
+      overflow: hidden; white-space: nowrap;
+      border-right: 3px solid var(--accent);
+      width: 0;
+      animation: typing 4s steps(40, end) forwards, blink 0.7s step-end infinite;
+    }
+    @keyframes typing {
+      from { width: 0; } to { width: 100%; }
+    }
+    @keyframes blink { 50% { border-color: transparent; } }
+
+    section {
+      padding: 60px 20px;
+      max-width: 1000px;
+      margin: auto;
+    }
+    .card {
+      background: var(--card);
+      border-radius: 12px;
+      padding: 30px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+      margin-bottom: 30px;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: all 0.6s ease-out;
+    }
+    .card.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .card h3 {
+      margin-bottom: 15px;
+      color: var(--accent);
+      font-size: 1.3rem;
+    }
+
+    .skills .bar {
+      margin-bottom: 15px;
+    }
+    .skills .bar label {
+      display: block; margin-bottom: 5px;
+    }
+    .skills .progress {
+      height: 10px; background: #333; border-radius: 20px;
+      overflow: hidden;
+    }
+    .skills .progress span {
+      display: block; height: 100%; background: var(--accent);
+    }
+
+    .project-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+    }
+    .project-grid .project {
+      background: #222; padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    }
+
+    form {
+      margin-top: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    form input, form textarea {
+      padding: 10px;
+      border: none;
+      border-radius: 5px;
+      background: #2a2a2a;
+      color: var(--text);
+    }
+    form button {
+      padding: 10px; border: none;
+      background: var(--accent); color: #fff;
+      font-weight: bold; border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .social-icons a {
+      color: var(--text); margin-right: 10px;
+      font-size: 1.2rem;
+    }
+
+    footer {
+      text-align: center;
+      padding: 30px;
+      font-size: 0.9rem;
+      color: #888;
+    }
+
+    @media (max-width: 768px) {
+      .nav-toggle { display: block; }
+      nav ul {
+        flex-direction: column;
+        position: absolute; top: 70px; right: 20px;
+        background: var(--card); padding: 1rem;
+        border-radius: 10px; display: none;
+      }
+      nav ul.show { display: flex; }
+    }
+  </style>
+</head>
+<body>
+
+  <button class="toggle-mode" onclick="toggleMode()">Toggle Mode</button>
+
+  <nav>
+    <h1>Portfolio</h1>
+    <div class="nav-toggle" onclick="toggleMenu()"><i class="fas fa-bars"></i></div>
+    <ul id="nav-links">
+      <li><a href="#about">About</a></li>
+      <li><a href="#education">Education</a></li>
+      <li><a href="#skills">Skills</a></li>
+      <li><a href="#projects">Projects</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+  </nav>
+
+  
+  <section class="hero">
+    <img src="Sohail.jpg" alt="Profile Photo" />
+    <h2>Mohd Sohel Ansari</h2>
+    <p class="typewriter">Software Developer | ReactJS • Django • AI Enthusiast</p>
+  </section>
+
+  <a href="Sohel Resume.pdf" download class="btn" style="display:block;text-align:center;margin:20px auto;background:var(--accent);color:white;padding:10px 20px;border-radius:25px;width:max-content;text-decoration:none;"><i class="fas fa-download"></i> Download Resume</a>
+
+  <section id="about" class="card">
+    <h3>About Me</h3>
+    <p>Innovative software developer with expertise in AI, web applications, and full-stack development. Proficient in ReactJS, Django, and MySQL. Passionate about UI/UX and impactful digital solutions.</p>
+  </section>
+
+  <section id="education" class="card">
+    <h3>Education</h3>
+    <p><strong>BSc IT</strong> – Anjuman-I-Islam's Kalsekar Technical Campus (2023–Present)</p>
+    <p>Mumbai, Maharashtra</p>
+  </section>
+
+  <section id="skills" class="card skills">
+    <h3>Skills</h3>
+    <div class="bar"><label>ReactJS</label><div class="progress"><span style="width: 90%"></span></div></div>
+    <div class="bar"><label>Django</label><div class="progress"><span style="width: 85%"></span></div></div>
+    <div class="bar"><label>SQL</label><div class="progress"><span style="width: 80%"></span></div></div>
+    <div class="bar"><label>Generative AI</label><div class="progress"><span style="width: 75%"></span></div></div>
+    <div class="bar"><label>Project Management</label><div class="progress"><span style="width: 70%"></span></div></div>
+  </section>
+
+  <section id="projects" class="card">
+    <h3>Projects</h3>
+    <div class="project-grid">
+      <div class="project">
+        <h4>Freelancing Platform</h4>
+        <p>Zero-commission marketplace with reviews, bidding & secure payments.</p>
+      </div>
+      <div class="project">
+        <h4>AI-Powered Job Platform</h4>
+        <p>Smart India Hackathon 2024 project with AI-driven job matching.</p>
+      </div>
+      <div class="project">
+        <h4>Inventory System</h4>
+        <p>Real-time stock tracking with alerts and dashboard.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="contact" class="card contact">
+    <h3>Contact</h3>
+    <p>Email: sa8764981@gmail.com</p>
+    <p>Phone: 9326221752</p>
+    <div class="social-icons">
+      <a href="https://github.com/yourgithub" target="_blank"><i class="fab fa-github"></i></a>
+      <a href="https://linkedin.com/in/yourlinkedin" target="_blank"><i class="fab fa-linkedin"></i></a>
+    </div>
+    <form id="contact-form">
+      <input type="text" name="user_name" placeholder="Your Name" required>
+      <input type="email" name="user_email" placeholder="Your Email" required>
+      <textarea name="message" rows="4" placeholder="Your Message" required></textarea>
+      <button type="submit">Send Message</button>
+    </form>
+  </section>
+
+  <footer>
+    <p>&copy; 2025 Mohd Sohel Ansari. All rights reserved.</p>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+  <script>
+    function toggleMode() {
+      document.body.classList.toggle('light');
+    }
+
+    function toggleMenu() {
+      document.getElementById('nav-links').classList.toggle('show');
+    }
+
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('.card').forEach(card => {
+      observer.observe(card);
+    });
+
+    (function() {
+      emailjs.init("gfw60VbCzbF5d1FJX"); //  EmailJS user ID
+    })();
+
+    document.getElementById('contact-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      emailjs.sendForm('service_rs7spkg','template_85tk6aj', this) // 'service_xxx', 'template_abc123'
+        .then(() => alert('Message sent successfully!'))
+        .catch((error) => alert('Message failed: ' + error));
+    });
+  </script>
+</body>
+</html>

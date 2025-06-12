@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Memory Game Enhanced</title>
+<style>
+  :root {
+    --bg-dark: #121212;
+    --bg-light: #f0f0f0;
+    --text-dark: #fff;
+    --text-light: #121212;
+    --card-front-dark: #1e1e1e;
+    --card-back-dark: #00bcd4;
+    --card-front-light: #ddd;
+    --card-back-light: #007acc;
+  }
+
+  body {
+    font-family: sans-serif;
+    background: var(--bg-dark);
+    color: var(--text-dark);
+    text-align: center;
+    padding: 20px;
+    transition: background 0.3s, color 0.3s;
+  }
+  body.light {
+    background: var(--bg-light);
+    color: var(--text-light);
+  }
+
+  h1 {
+    font-size: 2rem;
+  }
+
+  .stats {
+    margin: 15px 0;
+    font-size: 18px;
+  }
+
+  .controls {
+    margin: 15px 0;
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    flex-wrap: wrap;
+  }
+
+  select, button {
+    padding: 8px 12px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 5px;
+    border: none;
+    background: #00bcd4;
+    color: #000;
+    transition: background 0.3s;
+  }
+  button:hover, select:hover {
+    background: #0097a7;
+  }
+  body.light button, body.light select {
+    background: #007acc;
+    color: #fff;
+  }
+  body.light button:hover, body.light select:hover {
+    background: #005f9e;
+  }
+
+  .game-board {
+    display: grid;
+    grid-template-columns: repeat(4, 100px);
+    grid-gap: 15px;
+    justify-content: center;
+    margin-top: 20px;
+  }
+
+  .card {
+    width: 100px;
+    height: 100px;
+    perspective: 600px;
+    cursor: pointer;
+    position: relative;
+  }
+
+  .card-inner {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    transform-style: preserve-3d;
+    transition: transform 0.6s;
+    border-radius: 10px;
+  }
+
+  .card.flipped .card-inner {
+    transform: rotateY(180deg);
+  }
+
+  .card-front, .card-back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 32px;
+    user-select: none;
+  }
+
+  .card-front {
+    background: var(--card-front-dark);
+    color: #fff;
+  }
+  body.light .card-front {
+    background: var(--card-front-light);
+    color: var(--text-light);
+  }
+
+  .card-back {
+    background: var(--card-back-dark);
+    transform: rotateY(180deg);
+    color: #000;
+  }
+  body.light .card-back {
+    background: var(--card-back-light);
+    color: #fff;
+  }
+
+  /* Match animation */
+  .card.match {
+    animation: pulse 0.5s ease forwards;
+  }
+  @keyframes pulse {
+    0% { box-shadow: 0 0 5px 2px #00bcd4; }
+    100% { box-shadow: 0 0 15px 5px #00bcd4; }
+  }
+
+  /* Leaderboard styles */
+  #leaderboard {
+    max-width: 400px;
+    margin: 30px auto 0;
+    text-align: left;
+    border: 2px solid #00bcd4;
+    border-radius: 10px;
+    padding: 15px;
+    background: rgba(0, 188, 212, 0.1);
+  }
+  body.light #leaderboard {
+    background: rgba(0, 122, 204, 0.1);
+    border-color: #007acc;
+  }
+  #leaderboard h2 {
+    margin-top: 0;
+    text-align: center;
+  }
+  #leaderboard ol {
+    padding-left: 20px;
+  }
+  #leaderboard li {
+    margin: 6px 0;
+  }
+</style>
+</head>
+<body>
+  <h1>Memory Game Enhanced</h1>
+
+  <div class="stats">
+    <span id="moves">Moves: 0</span> | 
+    <span id="timer">Time: 0s</span> | 
+    <span id="matched">Matches: 0</span>
+  </div>
+
+  <div class="controls">
+    <select id="difficulty">
+      <option value="4">Easy (4 pairs)</option>
+      <option value="6" selected>Medium (6 pairs)</option>
+      <option value="8">Hard (8 pairs)</option>
+      <option value="10">Extreme (10 pairs)</option>
+    </select>
+
+    <button id="restartBtn">Restart</button>
+    <button id="pauseBtn">Pause</button>
+    <button id="modeToggle">Light Mode</button>
+  </div>
+
+  <div class="game-board" id="game-board"></div>
+
+  <div id="leaderboard">
+    <h2>Leaderboard (Top 5 Best Scores)</h2>
+    <ol id="leaderboardList"></ol>
+  </div>
+
+<script>
+  const allSymbols = ['🐶','🐱','🐭','🐹','🦊','🐻','🐼','🐸','🐵','🐯','🦁','🐨','🐷','🐰','🐔','🐧','🐢','🐬','🐴','🦄'];
+
+  let moves = 0;
+  let seconds = 0;
+  let matchedPairs = 0;
+  let flippedCards = [];
+  let timer;
+  let gameStarted = false;
+  let paused = false;
+
+  // Current game config
+  let currentPairs = 6;  // default medium
+  let symbols = [];
+  let cards = [];
+
+
+  // Sound effects
+  const sounds = {
+    flip: new Audio('https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg'),
+      match: new Audio('https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg'),
+      mismatch: new Audio('https://actions.google.com/sounds/v1/cartoon/slide_whistle_to_drum_hit.ogg'),
+    };
+
+
+  const board = document.getElementById('game-board');
+  const movesDisplay = document.getElementById('moves');
+  const timerDisplay = document.getElementById('timer');
+  const matchedDisplay = document.getElementById('matched');
+  const restartBtn = document.getElementById('restartBtn');
+  const pauseBtn = document.getElementById('pauseBtn');
+  const difficultySelect = document.getElementById('difficulty');
+  const modeToggle = document.getElementById('modeToggle');
+  const leaderboardList = document.getElementById('leaderboardList');
+
+  // LOCAL STORAGE KEYS
+  const LS_BEST_SCORE = 'memoryGameBestScores'; // stores array of {moves, time, pairs}
+
+  function shuffle(array) {
+    return array.sort(() => 0.5 - Math.random());
+  }
+
+  function createCard(symbol) {
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.innerHTML = `
+      <div class="card-inner">
+        <div class="card-front">?</div>
+        <div class="card-back">${symbol}</div>
+      </div>
+    `;
+    card.addEventListener('click', () => handleCardClick(card, symbol));
+    return card;
+  }
+
+  function handleCardClick(card, symbol) {
+    if (paused) return;
+    if (card.classList.contains('flipped') || flippedCards.length === 2) return;
+
+    if (!gameStarted) startTimer();
+
+    card.classList.add('flipped');
+    flippedCards.push({ card, symbol });
+
+    if (flippedCards.length === 2) {
+      moves++;
+      movesDisplay.textContent = `Moves: ${moves}`;
+
+      const [first, second] = flippedCards;
+      if (first.symbol === second.symbol) {
+        matchedPairs++;
+        matchedDisplay.textContent = `Matches: ${matchedPairs}`;
+        // Add match animation
+        first.card.classList.add('match');
+        second.card.classList.add('match');
+
+        // Remove animation class after animation ends to allow re-triggering
+        setTimeout(() => {
+          first.card.classList.remove('match');
+          second.card.classList.remove('match');
+        }, 500);
+
+        flippedCards = [];
+        if (matchedPairs === currentPairs) {
+          clearInterval(timer);
+          gameStarted = false;
+          saveScore(moves, seconds, currentPairs);
+          setTimeout(() => alert(`🎉 You won in ${moves} moves and ${seconds} seconds!`), 300);
+          updateLeaderboardUI();
+        }
+      } else {
+        setTimeout(() => {
+          first.card.classList.remove('flipped');
+          second.card.classList.remove('flipped');
+          flippedCards = [];
+        }, 1000);
+      }
+    }
+  }
+
+  function startTimer() {
+    gameStarted = true;
+    paused = false;
+    timer = setInterval(() => {
+      if (!paused) {
+        seconds++;
+        timerDisplay.textContent = `Time: ${seconds}s`;
+      }
+    }, 1000);
+  }
+
+  function resetGame() {
+    clearInterval(timer);
+    gameStarted = false;
+    paused = false;
+    moves = 0;
+    seconds = 0;
+    matchedPairs = 0;
+    flippedCards = [];
+    movesDisplay.textContent = `Moves: 0`;
+    timerDisplay.textContent = `Time: 0s`;
+    matchedDisplay.textContent = `Matches: 0`;
+    pauseBtn.textContent = 'Pause';
+
+    board.innerHTML = '';
+
+    // Select symbols for current difficulty
+    symbols = shuffle(allSymbols).slice(0, currentPairs);
+    cards = shuffle([...symbols, ...symbols]);
+
+    // Update grid columns based on pairs (try sqrt * 2 rounded)
+    let cols = Math.ceil(Math.sqrt(currentPairs * 2));
+    board.style.gridTemplateColumns = `repeat(${cols}, 100px)`;
+
+    // Create cards on board
+    cards.forEach(symbol => {
+      board.appendChild(createCard(symbol));
+    });
+  }
+
+  function togglePause() {
+    if (!gameStarted) return;
+    paused = !paused;
+    pauseBtn.textContent = paused ? 'Resume' : 'Pause';
+  }
+
+  // Dark/light mode toggle
+  modeToggle.addEventListener('click', () => {
+    document.body.classList.toggle('light');
+    modeToggle.textContent = document.body.classList.contains('light') ? 'Dark Mode' : 'Light Mode';
+  });
+
+  // Restart button
+  restartBtn.addEventListener('click', () => {
+    resetGame();
+  });
+
+  // Pause button
+  pauseBtn.addEventListener('click', () => {
+    togglePause();
+  });
+
+  // Difficulty change
+  difficultySelect.addEventListener('change', (e) => {
+    currentPairs = Number(e.target.value);
+    resetGame();
+  });
+
+  // Save score to localStorage leaderboard
+  function saveScore(moves, time, pairs) {
+    const scores = JSON.parse(localStorage.getItem(LS_BEST_SCORE)) || [];
+
+    // Add new score
+    scores.push({ moves, time, pairs });
+
+    // Sort by moves, then time ascending
+    scores.sort((a, b) => a.moves - b.moves || a.time - b.time);
+
+    // Keep only top 5 scores
+    const filtered = scores.filter(s => s.pairs === pairs).slice(0, 5);
+
+    // Save filtered by pairs only for leaderboard display consistency
+    localStorage.setItem(LS_BEST_SCORE, JSON.stringify(scores));
+
+    return filtered;
+  }
+
+  // Load scores for current difficulty
+  function getScoresForCurrentPairs() {
+    const scores = JSON.parse(localStorage.getItem(LS_BEST_SCORE)) || [];
+    return scores.filter(s => s.pairs === currentPairs)
+                 .sort((a, b) => a.moves - b.moves || a.time - b.time)
+                 .slice(0, 5);
+  }
+
+  // Update leaderboard UI
+  function updateLeaderboardUI() {
+    const scores = getScoresForCurrentPairs();
+    leaderboardList.innerHTML = '';
+    if (scores.length === 0) {
+      leaderboardList.innerHTML = '<li>No scores yet. Play to set a record!</li>';
+      return;
+    }
+    scores.forEach(({moves, time}, i) => {
+      const li = document.createElement('li');
+      li.textContent = `#${i+1} - Moves: ${moves}, Time: ${time}s`;
+      leaderboardList.appendChild(li);
+    });
+  }
+
+  // Initial setup
+  resetGame();
+  updateLeaderboardUI();
+
+</script>
+</body>
+</html>

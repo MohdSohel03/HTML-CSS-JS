@@ -1,0 +1,62 @@
+canvas {
+      background: black;
+      display: block;
+      margin: 0 auto;
+      border: 2px solid #444;
+      box-shadow: 0 0 20px #0ff;
+      visibility: hidden;
+    }
+    body {
+      text-align: center;
+      background-color: #111;
+      color: white;
+      font-family: 'Orbitron', sans-serif;
+    }
+    #gameOverScreen {
+      display: none;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: rgba(0, 0, 0, 0.85);
+      padding: 30px;
+      border: 2px solid white;
+      border-radius: 10px;
+    }
+    .asset-display {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin: 10px 0;
+    }
+    .asset-display img {
+      width: 40px;
+      height: auto;
+      border: 2px solid #555;
+      border-radius: 6px;
+      background-color: #222;
+      padding: 5px;
+      box-shadow: 0 0 10px #0ff;
+    }
+
+    .Menu{
+      display: grid;
+      align-items: center;
+      justify-content: center;
+      position: absolute;
+      height: 300px;
+      width: 500px;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: rgba(0, 0, 0, 0.85);
+      padding: 30px;
+      border: 2px solid white;
+      border-radius: 10px;
+      background-image: url(assets/parallax_bg.png);
+      visibility: visible;
+      button{
+        height: 70px;
+        width: 140px;
+      }
+    }

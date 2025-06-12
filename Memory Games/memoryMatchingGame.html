@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Memory Matching Game</title>
+  <style>
+    :root {
+      --card-size: 100px;
+      --bg-color-dark: #121212;
+      --text-color-dark: #eee;
+      --bg-color-light: #f0f0f0;
+      --text-color-light: #222;
+      --primary-color: #4caf50;
+      --accent-color: #ff5722;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--bg-color-dark);
+      color: var(--text-color-dark);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      transition: background-color 0.3s, color 0.3s;
+      padding: 20px;
+    }
+
+    body.light {
+      background-color: var(--bg-color-light);
+      color: var(--text-color-light);
+    }
+
+    h1 {
+      margin-bottom: 10px;
+      user-select: none;
+    }
+
+    #controls {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    select, button {
+      padding: 8px 14px;
+      font-size: 16px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      user-select: none;
+      transition: background-color 0.2s, color 0.2s;
+    }
+
+    select {
+      min-width: 120px;
+    }
+
+    button {
+      background-color: var(--primary-color);
+      color: white;
+      font-weight: 600;
+      box-shadow: 0 3px 6px rgba(0,0,0,0.2);
+    }
+
+    button:hover {
+      background-color: var(--accent-color);
+    }
+
+    #stats {
+      margin-bottom: 20px;
+      font-size: 18px;
+      user-select: none;
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    #board {
+      display: grid;
+      gap: 12px;
+      justify-content: center;
+      margin-bottom: 20px;
+      user-select: none;
+    }
+
+    .card {
+      width: var(--card-size);
+      height: var(--card-size);
+      perspective: 1000px;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .card.paused {
+      pointer-events: none;
+      cursor: default;
+    }
+
+    .card-inner {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      transition: transform 0.5s;
+      transform-style: preserve-3d;
+      border-radius: 12px;
+      box-shadow: 0 3px 6px rgba(0,0,0,0.3);
+      transform: rotateY(180deg); /* Yeh line add kara hu jisse card flip hoga mtlb sedha hoga */
+    }
+
+    .card.flipped .card-inner {
+      transform: rotateY(0deg);  /* Yaha pe 180deg tha mtlb card sedha rahega to usko 0deg kara taki card ulta rahe .flipped class add karne pe */
+      box-shadow: 0 5px 15px var(--primary-color);
+    }
+
+    .card-front,
+    .card-back {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      border-radius: 12px;
+      backface-visibility: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 48px;
+      user-select: none;
+    }
+
+    .card-front {
+      background-color: var(--primary-color);
+      color: white;
+    }
+
+    .card-back {
+      background-color: var(--bg-color-dark);
+      color: var(--text-color-dark);
+      transform: rotateY(180deg);
+      border: 2px solid var(--primary-color);
+    }
+
+    body.light .card-back {
+      background-color: var(--bg-color-light);
+      color: var(--text-color-light);
+      border: 2px solid var(--primary-color);
+    }
+
+    #leaderboard {
+      max-width: 320px;
+      text-align: center;
+      font-size: 16px;
+      user-select: none;
+    }
+
+    #leaderboard h2 {
+      margin-bottom: 10px;
+    }
+
+    #leaderboard ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    #leaderboard li {
+      background: var(--primary-color);
+      color: white;
+      margin: 4px 0;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-weight: 600;
+    }
+
+    /* Pause overlay on board */
+    #board.paused::after {
+      content: "Paused";
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 48px;
+      color: var(--accent-color);
+      font-weight: 700;
+      pointer-events: none;
+      user-select: none;
+      text-shadow: 0 0 8px #000;
+    }
+  </style>
+</head>
+<body>
+  <h1>Memory Matching Game</h1>
+  <div id="controls">
+    <label for="difficulty">Pairs:</label>
+    <select id="difficulty" title="Select number of pairs">
+      <option value="3">3 Pairs</option>
+      <option value="4" selected>4 Pairs</option>
+      <option value="5">5 Pairs</option>
+      <option value="6">6 Pairs</option>
+      <option value="7">7 Pairs</option>
+      <option value="8">8 Pairs</option>
+    </select>
+    <button id="restartBtn" title="Restart Game">Restart</button>
+    <button id="pauseBtn" title="Pause/Resume Game">Pause</button>
+    <button id="modeToggle" title="Toggle Light/Dark Mode">Light Mode</button>
+  </div>
+
+  <div id="stats">
+    <div id="movesDisplay">Moves: 0</div>
+    <div id="timerDisplay">Time: 0s</div>
+    <div id="matchedDisplay">Matches: 0</div>
+  </div>
+
+  <div id="board"></div>
+
+  <div id="leaderboard">
+    <h2>Leaderboard</h2>
+    <ul id="leaderboardList">
+      <li>No scores yet.</li>
+    </ul>
+  </div>
+
+<script>
+(() => {
+  const allSymbols = ['🐶','🐱','🦊','🐸','🐵','🐰','🐼','🐨','🐯','🦁','🐮','🐷','🐔','🐧','🐢','🐝'];
+  const LS_BEST_SCORE = 'memoryGameBestScores';
+
+  const board = document.getElementById('board');
+  const movesDisplay = document.getElementById('movesDisplay');
+  const timerDisplay = document.getElementById('timerDisplay');
+  const matchedDisplay = document.getElementById('matchedDisplay');
+  const difficultySelect = document.getElementById('difficulty');
+  const restartBtn = document.getElementById('restartBtn');
+  const pauseBtn = document.getElementById('pauseBtn');
+  const modeToggle = document.getElementById('modeToggle');
+  const leaderboardList = document.getElementById('leaderboardList');
+
+  let cards = [];
+  let flippedCards = [];
+  let matchedPairs = 0;
+  let moves = 0;
+  let seconds = 0;
+  let timer = null;
+  let gameStarted = false;
+  let paused = false;
+  let isAnimatingStart = false;
+  let currentPairs = parseInt(difficultySelect.value);
+
+  // Sound effects - simple beep with Web Audio API
+  const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+  function playSound(type) {
+    if (paused) return;
+    let frequency;
+    switch(type) {
+      case 'flip': frequency = 600; break;
+      case 'match': frequency = 900; break;
+      case 'win': frequency = 1200; break;
+      default: return;
+    }
+    const oscillator = audioCtx.createOscillator();
+    const gainNode = audioCtx.createGain();
+
+    oscillator.connect(gainNode);
+    gainNode.connect(audioCtx.destination);
+
+    oscillator.type = 'square';
+    oscillator.frequency.value = frequency;
+    gainNode.gain.setValueAtTime(0.15, audioCtx.currentTime);
+
+    oscillator.start();
+    oscillator.stop(audioCtx.currentTime + 0.15);
+  }
+
+  function createCard(symbol) {
+    const card = document.createElement('div');
+    card.classList.add('card');
+    card.setAttribute('tabindex', 0);
+    card.dataset.symbol = symbol;
+
+    const inner = document.createElement('div');
+    inner.classList.add('card-inner');
+
+    const front = document.createElement('div');
+    front.classList.add('card-front');
+    front.textContent = symbol;
+
+    const back = document.createElement('div');
+    back.classList.add('card-back');
+    back.textContent = '❓';
+
+    inner.appendChild(front);
+    inner.appendChild(back);
+    card.appendChild(inner);
+
+    card.addEventListener('click', () => onCardClick(card));
+    card.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        onCardClick(card);
+      }
+    });
+
+    return card;
+  }
+
+  function onCardClick(card) {
+    if (paused || isAnimatingStart) return;
+    if (flippedCards.length === 2) return;
+    if (flippedCards.find(c => c.card === card)) return;
+    if (card.classList.contains('flipped')) return;
+
+    flipCard(card);
+
+    flippedCards.push({ card, symbol: card.dataset.symbol });
+
+    if (flippedCards.length === 2) {
+      moves++;
+      movesDisplay.textContent = `Moves: ${moves}`;
+
+      const [first, second] = flippedCards;
+      if (first.symbol === second.symbol) {
+        matchedPairs++;
+        matchedDisplay.textContent = `Matches: ${matchedPairs}`;
+        playSound('match');
+
+        flippedCards = [];
+
+        if (matchedPairs === currentPairs) {
+          clearInterval(timer);
+          playSound('win');
+          setTimeout(() => {
+            alert(`🎉 You won! Moves: ${moves}, Time: ${seconds}s`);
+            saveScore();
+            renderLeaderboard();
+          }, 300);
+        }
+      } else {
+        setTimeout(() => {
+          flippedCards.forEach(({ card }) => unflipCard(card));
+          flippedCards = [];
+        }, 1000);
+      }
+    }
+  }
+
+  function flipCard(card) {
+    card.classList.add('flipped');
+    playSound('flip');
+    if (!gameStarted) startTimer(0);
+  }
+
+  function unflipCard(card) {
+    card.classList.remove('flipped');
+  }
+
+  function startTimer(time) { // Yaha pe time variable pass kara hu taki agar game pause ho to pause hone se pehle ka time 
+    gameStarted = true;       // record kar lu aur phir usko pass kar ke time wahi se start karu aur agar pause nhi hua to
+    seconds = time;           //  zero pass karna padega taki time zero se start ho
+    timerDisplay.textContent = `Time: ${seconds}s`;
+    timer = setInterval(() => {
+      seconds++;
+      timerDisplay.textContent = `Time: ${seconds}s`;
+    }, 1000);
+  }
+
+  function resetGame() {
+    clearInterval(timer);
+    gameStarted = false;
+    moves = 0;
+    matchedPairs = 0;
+    flippedCards = [];
+    movesDisplay.textContent = `Moves: 0`;
+    timerDisplay.textContent = `Time: 0s`;
+    matchedDisplay.textContent = `Matches: 0`;
+    paused = false;
+    pauseBtn.textContent = 'Pause';
+    board.classList.remove('paused');
+    isAnimatingStart = true;
+
+    currentPairs = parseInt(difficultySelect.value);
+
+    // Select random unique symbols and duplicate
+    let selectedSymbols = shuffle(allSymbols).slice(0, currentPairs);
+    cards = shuffle([...selectedSymbols, ...selectedSymbols]);
+
+    // Grid columns adjust to pairs count, max 5 columns
+    const columns = Math.min(5, currentPairs);
+    board.style.gridTemplateColumns = `repeat(${columns}, var(--card-size))`;
+
+    board.innerHTML = '';
+    cards.forEach(sym => {
+      const card = createCard(sym);
+      board.appendChild(card);
+    });
+
+    // Show preview: flip all cards for 2 seconds, then flip back
+    const cardElements = Array.from(board.children);
+    cardElements.forEach(card => card.classList.add('flipped'));
+    setTimeout(() => {
+      cardElements.forEach(card => card.classList.remove('flipped'));
+      isAnimatingStart = false;
+    }, 1000);
+
+    renderLeaderboard();
+  }
+
+  function pauseGame() {
+    if (!gameStarted) return;
+    paused = !paused;
+    let recordTime = seconds;   // Yaha pe game pause hone se pehle time ko record kar rha hu
+    if (paused) {
+      clearInterval(timer);
+      pauseBtn.textContent = 'Resume';
+      board.classList.add('paused');
+    } else {
+      pauseBtn.textContent = 'Pause';
+      board.classList.remove('paused');
+      startTimer(recordTime);   // Aur phir yaha pe wo time ko pass kar rha hu taki resume hone pe time wahi se start ho
+    }
+  }
+
+  function toggleMode() {
+    document.body.classList.toggle('light');
+    if (document.body.classList.contains('light')) {
+      modeToggle.textContent = 'Dark Mode';
+    } else {
+      modeToggle.textContent = 'Light Mode';
+    }
+  }
+
+  function shuffle(array) {
+    const arr = [...array];
+    for(let i = arr.length -1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i+1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+  }
+
+  function getLeaderboard() {
+    const data = localStorage.getItem(LS_BEST_SCORE);
+    return data ? JSON.parse(data) : [];
+  }
+
+  function saveScore() {
+    let leaderboard = getLeaderboard();
+    leaderboard.push({ moves, time: seconds, pairs: currentPairs });
+    // Filter current difficulty and sort by moves then time ascending
+    leaderboard = leaderboard
+      .filter(s => s.pairs === currentPairs)
+      .sort((a, b) => (a.moves === b.moves ? a.time - b.time : a.moves - b.moves))
+      .slice(0, 5);
+    // Save all scores with others too (keep scores for other difficulties)
+    const others = getLeaderboard().filter(s => s.pairs !== currentPairs);
+    localStorage.setItem(LS_BEST_SCORE, JSON.stringify([...others, ...leaderboard]));
+  }
+
+  function renderLeaderboard() {
+    const leaderboard = getLeaderboard().filter(s => s.pairs === currentPairs);
+    leaderboardList.innerHTML = '';
+    if (leaderboard.length === 0) {
+      leaderboardList.innerHTML = '<li>No scores yet.</li>';
+      return;
+    }
+    leaderboard.forEach(({ moves, time }) => {
+      const li = document.createElement('li');
+      li.textContent = `Moves: ${moves}, Time: ${time}s`;
+      leaderboardList.appendChild(li);
+    });
+  }
+
+  // Event listeners
+  restartBtn.addEventListener('click', resetGame);
+  pauseBtn.addEventListener('click', pauseGame);
+  difficultySelect.addEventListener('change', () => {
+    resetGame();
+  });
+  modeToggle.addEventListener('click', toggleMode);
+
+  // Initialize
+  resetGame();
+})();
+</script>
+</body>
+</html>

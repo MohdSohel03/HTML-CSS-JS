@@ -1,0 +1,56 @@
+body {
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+  background: #121212;
+  color: #ffffff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.container {
+  text-align: center;
+  background: #1e1e1e;
+  padding: 2rem;
+  border-radius: 10px;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+  max-width: 400px;
+  width: 100%;
+}
+
+.search input {
+  padding: 0.5rem;
+  width: 70%;
+  border: none;
+  border-radius: 5px;
+  margin-right: 5px;
+}
+
+.search button {
+  padding: 0.5rem 1rem;
+  background: #03dac6;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  color: #000;
+  font-weight: bold;
+}
+
+.weather-box {
+  margin-top: 1.5rem;
+}
+
+.weather-box img {
+  width: 100px;
+}
+
+@media (max-width: 500px) {
+  .search input {
+    width: 60%;
+  }
+
+  .container {
+    padding: 1rem;
+  }
+}

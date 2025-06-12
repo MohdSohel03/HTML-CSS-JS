@@ -1,0 +1,77 @@
+body {
+    font-family: 'Comic Sans MS', cursive, sans-serif;
+    background: linear-gradient(to right, #ff9a9e, #fad0c4);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+.login-container {
+    background: #ffffff;
+    padding: 2em;
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    width: 320px;
+    text-align: center;
+    animation: bounceIn 1s ease;
+}
+
+h1 {
+    color: #ff6f61;
+    margin-bottom: 1em;
+}
+
+label {
+    display: block;
+    margin-bottom: 0.5em;
+    color: #333;
+}
+
+input[type="text"],
+input[type="password"] {
+    width: calc(100% - 1em);
+    padding: 0.75em;
+    margin-bottom: 1em;
+    border: 2px solid #ff6f61;
+    border-radius: 8px;
+    font-size: 1em;
+    box-sizing: border-box;
+}
+
+input::placeholder {
+    color: #ffb6c1;
+}
+
+button {
+    width: 100%;
+    padding: 0.75em;
+    border: none;
+    border-radius: 8px;
+    background-color: #ff6f61;
+    color: white;
+    font-size: 1.1em;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #ff3f4c;
+}
+
+.hidden {
+    display: none;
+}
+
+#error-message {
+    color: #ff3f4c;
+    margin-top: 1em;
+    font-size: 1em;
+}
+
+@keyframes bounceIn {
+    0% { transform: scale(0.5); opacity: 0; }
+    50% { transform: scale(1.05); opacity: 1; }
+    100% { transform: scale(1); }
+}

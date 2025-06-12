@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculator</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: rgb(124, 17, 17);
+            font-family: Arial, sans-serif;
+        }
+        .calculator {
+            width: 300px;
+            padding: 20px;
+            border-radius: 30px;
+            background-color: black;
+        }
+        .display {
+            width: 100%;
+            height: 60px;
+            text-align: right;
+            font-size: 2em;
+            color: white;
+            border: none;
+            background: none;
+            outline: none;
+            margin-bottom: 10px;
+            border-radius: 15px;
+        }
+        .buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+        button {
+            width: 100%;
+            height: 60px;
+            font-size: 1.5em;
+            border: 2px solid white;
+            border-radius: 30px;
+            cursor: pointer;
+        }
+        .gray { background-color: #A5A5A5; }
+        .black { background-color: #333; color: white; }
+        .orange { background-color: #FF9500; color: white; }
+        .zero {
+            grid-column: span 2;
+            width: 100%;
+            border-radius: 30px;
+        }
+    </style>
+</head>
+<body>
+    <div class="calculator">
+        <input type="text" class="display" id="display" readonly>
+        <div class="buttons">
+            <button class="gray" onclick="clearDisplay()">C</button>
+            <button class="gray" onclick="toggleSign()">+/-</button>
+            <button class="gray" onclick="appendCharacter('%')">%</button>
+            <button class="orange" onclick="appendCharacter('/')">&divide;</button>
+            <button class="black" onclick="appendCharacter('7')">7</button>
+            <button class="black" onclick="appendCharacter('8')">8</button>
+            <button class="black" onclick="appendCharacter('9')">9</button>
+            <button class="orange" onclick="appendCharacter('*')">&times;</button>
+            <button class="black" onclick="appendCharacter('4')">4</button>
+            <button class="black" onclick="appendCharacter('5')">5</button>
+            <button class="black" onclick="appendCharacter('6')">6</button>
+            <button class="orange" onclick="appendCharacter('-')">&minus;</button>
+            <button class="black" onclick="appendCharacter('1')">1</button>
+            <button class="black" onclick="appendCharacter('2')">2</button>
+            <button class="black" onclick="appendCharacter('3')">3</button>
+            <button class="orange" onclick="appendCharacter('+')">&plus;</button>
+            <button class="black zero" onclick="appendCharacter('0')">0</button>
+            <button class="black" onclick="appendCharacter('.')">.</button>
+            <button class="orange" onclick="calculateResult()">=</button>
+        </div>
+    </div>
+
+    <script>
+        function appendCharacter(char) {
+            document.getElementById('display').value += char;
+        }
+        function clearDisplay() {
+            document.getElementById('display').value = '';
+        }
+        function calculateResult() {
+            try {
+                document.getElementById('display').value = eval(document.getElementById('display').value);
+            } catch (e) {
+                alert('Invalid Expression');
+            }
+        }
+        function toggleSign() {
+            let display = document.getElementById('display');
+            if (display.value) {
+                display.value = display.value.startsWith('-') ? display.value.substring(1) : '-' + display.value;
+            }
+        }
+    </script>
+</body>
+</html>

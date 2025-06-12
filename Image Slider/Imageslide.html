@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Image Slider</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: linear-gradient(135deg, #1e1e1e, #3a3a3a);
+            overflow: hidden;
+        }
+
+        .slider-container {
+            position: relative;
+            perspective: 1200px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .carousel {
+            width: 280px;
+            height: 180px;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 1s ease-in-out;
+        }
+
+        .carousel img {
+            width: 280px;
+            height: 180px;
+            position: absolute;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Positioning images in a circular 3D effect with reduced spacing */
+        .carousel img:nth-child(1) { transform: rotateY(0deg) translateZ(350px); }
+        .carousel img:nth-child(2) { transform: rotateY(60deg) translateZ(350px); }
+        .carousel img:nth-child(3) { transform: rotateY(120deg) translateZ(350px); }
+        .carousel img:nth-child(4) { transform: rotateY(180deg) translateZ(350px); }
+        .carousel img:nth-child(5) { transform: rotateY(240deg) translateZ(350px); }
+        .carousel img:nth-child(6) { transform: rotateY(300deg) translateZ(350px); }
+
+        /* Navigation Buttons */
+        .button-container {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 35px;
+        }
+
+        .prev, .next {
+            background: rgba(174, 7, 7, 0.2);
+            border: none;
+            padding: 12px 20px;
+            cursor: pointer;
+            font-size: 16px;
+            border-radius: 8px;
+            transition: 0.3s;
+            color: white;
+        }
+
+        .prev:hover, .next:hover {
+            background: rgba(255, 255, 255, 0.7);
+            color: black;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="slider-container">
+        <div class="carousel">
+            <img src="City.jpg" alt="1">
+            <img src="Animal.webp" alt="2">
+            <img src="Nature.jpg" alt="3">
+            <img src="Robotic.webp" alt="4">
+            <img src="Technology.jpg" alt="5">
+            <img src="Nature1.jpg" alt="6">
+        </div>
+        
+        <!-- Buttons Below -->
+        <div class="button-container">
+            <button class="prev" onclick="rotateCarousel(-1)">&#10094; Prev</button>
+            <button class="next" onclick="rotateCarousel(1)">Next &#10095;</button>
+        </div>
+    </div>
+
+    <script>
+        let angle = 0;
+
+        function rotateCarousel(direction) {
+            angle += direction * 60;
+            document.querySelector(".carousel").style.transform = `rotateY(${angle}deg)`;
+        }
+
+        setInterval(() => {
+            rotateCarousel(1);
+        }, 5000); // Auto-slide every 5 seconds
+    </script>
+
+</body>
+</html>
