@@ -12,7 +12,7 @@ A clean, responsive, and modern to-do list app built using **HTML**, **CSS**, an
 
 ## 📸 Demo
 
-![To-Do App Screenshot](demo-screenshot.png) <!-- Replace with actual screenshot if available -->
+![To-Do App Screenshot](C:\Users\sa876\OneDrive\Pictures\Screenshots\TodoUI2.png) <!-- Replace with actual screenshot if available -->
 
 ## 🛠️ Tech Stack
 
