@@ -42,8 +42,8 @@ This is a personal developer portfolio website built using **HTML, CSS, and Java
 
 ## 📬 Contact
 
-- 📧 Email: sa8764981@gmail.com  
-- 📱 Phone: 9326221752  
+- 📧 Email: example@gmail.com  
+- 📱 Phone: 9326------ 
 - 🌐 [GitHub](https://github.com/yourgithub)  
 - 🔗 [LinkedIn](https://linkedin.com/in/yourlinkedin)
 
