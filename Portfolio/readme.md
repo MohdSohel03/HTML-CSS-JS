@@ -44,7 +44,7 @@ This is a personal developer portfolio website built using **HTML, CSS, and Java
 
 - 📧 Email: sa87649810@gmail.com  
 - 📱 Phone: 9326------ 
-- 🌐 [GitHub](https://github.com/yourgithub)  
+- 🌐 [GitHub](https://github.com/MohdSohel03)  
 - 🔗 [LinkedIn](https://linkedin.com/in/yourlinkedin)
 
 ---
